@@ -9,7 +9,7 @@ type Message struct {
 	// the user that sent the message
 	username string
 	// the message content itself
-	msg string
+	content string
 }
 
 // MessageStore

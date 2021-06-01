@@ -5,13 +5,18 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"fmt"
 )
 
-var message string = ""
+var messages *MessageStore
+
+func init() {
+	messages =  NewMessageStore()
+}
 
 func main() {
 	// Set routing rules
-	http.HandleFunc("/messages/send", SetMessage)
+	http.HandleFunc("/messages/send", SendMessage)
 	http.HandleFunc("/messages/receive", GetMessage)
 
 	//Use the default DefaultServeMux.
@@ -21,14 +26,26 @@ func main() {
 	}
 }
 
-func SetMessage(w http.ResponseWriter, r *http.Request) {
+func SendMessage(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
+	messages.Add(Message{0, "John", string(body[:])})
+
 	w.Write(body)
 }
 
 func GetMessage(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "CHIT CHAT!!!")
+
+	for e := messages.List().Front(); e != nil; e = e.Next() {
+
+		msg := e.Value.(Message);
+		s := fmt.Sprintf("%s: %s \n", msg.username, msg.content)
+		io.WriteString(w, s)
+		fmt.Println(e)
+	
+		
+	}
+	
 }
