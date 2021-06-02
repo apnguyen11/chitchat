@@ -1,17 +1,18 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"fmt"
 )
 
 var messages *MessageStore
 
 func init() {
-	messages =  NewMessageStore()
+	messages = NewMessageStore()
 }
 
 func main() {
@@ -31,21 +32,27 @@ func SendMessage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	messages.Add(Message{0, "John", string(body[:])})
 
-	w.Write(body)
+	var m Message
+
+	err = json.Unmarshal(body, &m)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(m)
+
+	messages.Add(m)
 }
 
 func GetMessage(w http.ResponseWriter, r *http.Request) {
 
 	for e := messages.List().Front(); e != nil; e = e.Next() {
 
-		msg := e.Value.(Message);
-		s := fmt.Sprintf("%s: %s \n", msg.username, msg.content)
+		msg := e.Value.(Message)
+		s := fmt.Sprintf("%s: %s \n", msg.Username, msg.Content)
 		io.WriteString(w, s)
 		fmt.Println(e)
-	
-		
+
 	}
-	
+
 }

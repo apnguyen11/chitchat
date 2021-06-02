@@ -5,11 +5,11 @@ import "container/list"
 // Message
 type Message struct {
 	// incrementing id for messages
-	id int
+	Id int
 	// the user that sent the message
-	username string
+	Username string `json:"username"`
 	// the message content itself
-	content string
+	Content string `json:"content"`
 }
 
 // MessageStore
