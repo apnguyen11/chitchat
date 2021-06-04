@@ -49,7 +49,7 @@ func GetMessage(w http.ResponseWriter, r *http.Request) {
 	for e := messages.List().Front(); e != nil; e = e.Next() {
 
 		msg := e.Value.(Message)
-		s := fmt.Sprintf("%s: %s \n", msg.Username, msg.Content)
+		s := fmt.Sprintf("[%s] %s: %s \n", msg.Channel, msg.Username, msg.Content)
 		io.WriteString(w, s)
 		fmt.Println(e)
 

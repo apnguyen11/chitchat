@@ -10,6 +10,8 @@ type Message struct {
 	Username string `json:"username"`
 	// the message content itself
 	Content string `json:"content"`
+
+	Channel string `json:"channel"`
 }
 
 // MessageStore
