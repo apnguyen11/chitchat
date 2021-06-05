@@ -34,6 +34,7 @@ func enableCors(w *http.ResponseWriter) {
 
 
 func SendMessage(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w);
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Fatal(err)

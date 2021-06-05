@@ -11,7 +11,7 @@ export class AppComponent {
   constructor(private http: HttpClient) { }
   title = 'frontend';
   message;
-  inputMessage: any = '{"channel": "#ANGULAR", "username": "andy", "content": "ANGULAR MESSAGE"}';
+  inputMessage: any = {"channel": "#ANGULAR", "username": "andy", "content": "ANGULAR MESSAGE"};
 
   ngOnInit() {
     // Simple GET request with response type <any>
@@ -19,9 +19,8 @@ export class AppComponent {
 
       this.http.get('http://localhost:8080/messages/receive', {responseType: 'text'}).subscribe(data => {
         this.message = data;
-
-    })
-    }, 2000)
+      })
+    }, 5000)
   }
 
 
@@ -31,9 +30,9 @@ export class AppComponent {
     console.log(event, 'event')
   }
 
-  sendMessage(): Observable<any> {
+  sendMessage(): any{
     console.log('send btn clicked', this.inputMessage);
     const headers = { 'content-type': 'application/json'}
-    return this.http.post('http://localhost:8080/messages/send', this.inputMessage,{'headers':headers})
+    this.http.post('http://localhost:8080/messages/send', this.inputMessage,{'headers':headers}).subscribe();
   }
 }
