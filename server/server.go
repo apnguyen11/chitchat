@@ -19,6 +19,7 @@ func main() {
 	// Set routing rules
 	http.HandleFunc("/messages/send", SendMessage)
 	http.HandleFunc("/messages/receive", GetMessage)
+	
 
 	//Use the default DefaultServeMux.
 	err := http.ListenAndServe(":8080", nil)
@@ -26,6 +27,11 @@ func main() {
 		log.Fatal(err)
 	}
 }
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
+
 
 func SendMessage(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
@@ -45,6 +51,8 @@ func SendMessage(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetMessage(w http.ResponseWriter, r *http.Request) {
+
+	enableCors(&w);
 
 	for e := messages.List().Front(); e != nil; e = e.Next() {
 
