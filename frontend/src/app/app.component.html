@@ -1,1 +1,5 @@
 <div>{{message}}</div>
+<div class="message-box">
+  <input (keyup)="onKey($event)" type="text">
+  <button (click)="sendMessage()">Send</button>
+</div>

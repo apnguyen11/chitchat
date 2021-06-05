@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -10,13 +11,29 @@ export class AppComponent {
   constructor(private http: HttpClient) { }
   title = 'frontend';
   message;
+  inputMessage: any = '{"channel": "#ANGULAR", "username": "andy", "content": "ANGULAR MESSAGE"}';
 
   ngOnInit() {
     // Simple GET request with response type <any>
-    this.http.get('http://localhost:8080/messages/receive', {responseType: 'text'}).subscribe(data => {
+    setInterval(() => {
+
+      this.http.get('http://localhost:8080/messages/receive', {responseType: 'text'}).subscribe(data => {
         this.message = data;
-        console.log("test");
-        console.log(this.message);
+
     })
-}
+    }, 2000)
+  }
+
+
+  onKey(event: any) { // without type info
+    this.inputMessage += event.target.value;
+    console.log(this.inputMessage, 'var')
+    console.log(event, 'event')
+  }
+
+  sendMessage(): Observable<any> {
+    console.log('send btn clicked', this.inputMessage);
+    const headers = { 'content-type': 'application/json'}
+    return this.http.post('http://localhost:8080/messages/send', this.inputMessage,{'headers':headers})
+  }
 }
