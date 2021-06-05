@@ -15,12 +15,12 @@ export class AppComponent {
 
   ngOnInit() {
     // Simple GET request with response type <any>
-    setInterval(() => {
+
 
       this.http.get('http://localhost:8080/messages/receive', {responseType: 'text'}).subscribe(data => {
         this.message = data;
       })
-    }, 5000)
+
   }
 
 
@@ -33,6 +33,6 @@ export class AppComponent {
   sendMessage(): any{
     console.log('send btn clicked', this.inputMessage);
     const headers = { 'content-type': 'application/json'}
-    this.http.post('http://localhost:8080/messages/send', this.inputMessage,{'headers':headers}).subscribe();
+    this.http.post('http://localhost:8080/messages/send', this.inputMessage).subscribe();
   }
 }
