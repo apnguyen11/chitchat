@@ -25,7 +25,7 @@ export class AppComponent {
 
 
   onKey(event: any) { // without type info
-    this.inputMessage += event.target.value;
+    this.inputMessage = event.target.value;
     console.log(this.inputMessage, 'var')
     console.log(event, 'event')
   }
@@ -33,6 +33,7 @@ export class AppComponent {
   sendMessage(): any{
     console.log('send btn clicked', this.inputMessage);
     const headers = { 'content-type': 'application/json'}
-    this.http.post('http://localhost:8080/messages/send', this.inputMessage).subscribe();
+    var data = {'channel': '#shouting', 'username': 'me', 'content': this.inputMessage}
+    this.http.post('http://localhost:8080/messages/send', data, {headers: headers}).subscribe();
   }
 }

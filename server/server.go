@@ -36,13 +36,12 @@ func logRequest(handler http.Handler) http.Handler {
 
 func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-    (*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-    (*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 }
 
-
 func SendMessage(w http.ResponseWriter, r *http.Request) {
-	enableCors(&w);
+	enableCors(&w)
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Println(err)
@@ -61,7 +60,7 @@ func SendMessage(w http.ResponseWriter, r *http.Request) {
 
 func GetMessage(w http.ResponseWriter, r *http.Request) {
 
-	enableCors(&w);
+	enableCors(&w)
 
 	for e := messages.List().Front(); e != nil; e = e.Next() {
 
