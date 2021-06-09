@@ -1,18 +1,7 @@
 package main
 
 import "container/list"
-
-// Message
-type Message struct {
-	// incrementing id for messages
-	Id int
-	// the user that sent the message
-	Username string `json:"username"`
-	// the message content itself
-	Content string `json:"content"`
-
-	Channel string `json:"channel"`
-}
+import "github.com/apnguyen11/chitchat/server/model"
 
 // MessageStore
 type MessageStore struct {
