@@ -1,4 +1,5 @@
 package main
+import "github.com/apnguyen11/chitchat/server/model"
 
 import (
 	"encoding/json"
@@ -7,6 +8,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"gorm.io/gorm"
+	"gorm.io/driver/sqlite"
 )
 
 var messages *MessageStore
@@ -16,12 +19,24 @@ func init() {
 }
 
 func main() {
+
+	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	if err != nil {
+	  panic("failed to connect database")
+	}
+  
+	// Migrate the schema
+	db.AutoMigrate(&model.Message{})
+  
+	// // Create
+	db.Create(&model.Message{Username: "Andy", Channel: "#Party", Content: "Yo Wassup"})
+  
 	// Set routing rules
 	http.HandleFunc("/messages/send", SendMessage)
 	http.HandleFunc("/messages/receive", GetMessage)
 
 	//Use the default DefaultServeMux.
-	err := http.ListenAndServe(":8080", logRequest(http.DefaultServeMux))
+	err = http.ListenAndServe(":8080", logRequest(http.DefaultServeMux))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -47,7 +62,7 @@ func SendMessage(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 
-	var m Message
+	var m model.Message
 
 	err = json.Unmarshal(body, &m)
 	if err != nil {
@@ -64,7 +79,7 @@ func GetMessage(w http.ResponseWriter, r *http.Request) {
 
 	for e := messages.List().Front(); e != nil; e = e.Next() {
 
-		msg := e.Value.(Message)
+		msg := e.Value.(model.Message)
 		s := fmt.Sprintf("[%s] %s: %s \n", msg.Channel, msg.Username, msg.Content)
 		io.WriteString(w, s)
 		fmt.Println(e)

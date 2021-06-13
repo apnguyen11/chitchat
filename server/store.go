@@ -18,6 +18,6 @@ func (s *MessageStore) List() *list.List {
 	return s.msgs
 }
 
-func (s *MessageStore) Add(m Message) {
+func (s *MessageStore) Add(m model.Message) {
 	s.msgs.PushBack(m)
 }

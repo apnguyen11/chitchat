@@ -2,18 +2,18 @@ package model
 
 import (
 	"gorm.io/gorm"
-	"gorm.io/driver/sqlite"
+	// "gorm.io/driver/sqlite"
   )
 
 // username
 type Message struct {
 	gorm.Model
 
-	user-id int
+	Username string `json:"username"`
 
-	channel-id int
+	Channel string `json:"channel"`
 	
-	content string `json:"content"`
+	Content string `json:"content"`
 
 }
 
