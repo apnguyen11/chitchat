@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -18,6 +19,7 @@ export class AppComponent {
 
 
       this.http.get('http://localhost:8080/messages/receive', {responseType: 'text'}).subscribe(data => {
+        console.log(data, 'data')
         this.message = data;
       })
 
