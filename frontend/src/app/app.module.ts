@@ -5,10 +5,12 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ChannelsComponent } from './channels/channels.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    ChannelsComponent
   ],
   imports: [
     BrowserModule,

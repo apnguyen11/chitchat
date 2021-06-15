@@ -14,6 +14,7 @@
 .main {
   height: 100vh;
   background-color: #20639B;
+  width: 100%;
 }
 
 .input {
@@ -42,4 +43,14 @@
   justify-content: center;
   height: 45%;
   margin-bottom: 3%;
+}
+
+.container {
+  display: flex;
+}
+
+.channels {
+  width: 20%;
+  background-color: #5698d0;
+
 }
