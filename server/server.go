@@ -13,13 +13,13 @@ import (
 )
 
 var messages *MessageStore
+var db *gorm.DB
 
 func init() {
 	messages = NewMessageStore()
 }
 
 func main() {
-
 	log.Printf("starting server")
 
 	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
@@ -29,9 +29,6 @@ func main() {
   
 	// Migrate the schema
 	db.AutoMigrate(&model.Message{})
-  
-	// // Create
-	db.Create(&model.Message{Username: "Andy", Channel: "#Party", Content: "Yo Wassup"})
   
 	// Set routing rules
 	http.HandleFunc("/messages/send", SendMessage)
@@ -58,13 +55,14 @@ func enableCors(w *http.ResponseWriter) {
 }
 
 func SendMessage(w http.ResponseWriter, r *http.Request) {
+
 	enableCors(&w)
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Println(err)
 	}
 
-	var m model.Message
+	var m *model.Message
 
 	err = json.Unmarshal(body, &m)
 	if err != nil {
@@ -72,7 +70,8 @@ func SendMessage(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(m)
 
-	messages.Add(m)
+	db.Create(m)
+	// messages.Add(m)
 }
 
 func GetMessage(w http.ResponseWriter, r *http.Request) {
