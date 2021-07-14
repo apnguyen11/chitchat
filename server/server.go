@@ -20,9 +20,9 @@ func init() {
 }
 
 func main() {
+	log.Printf("starting server")
 
-	var err error
-	db, err = gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 	if err != nil {
 	  panic("failed to connect database")
 	}
