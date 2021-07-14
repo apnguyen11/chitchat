@@ -21,8 +21,8 @@ func init() {
 
 func main() {
 
-
-	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	var err error
+	db, err = gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 	if err != nil {
 	  panic("failed to connect database")
 	}
@@ -75,16 +75,25 @@ func SendMessage(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetMessage(w http.ResponseWriter, r *http.Request) {
+	var messages []model.Message
 
 	enableCors(&w)
 
-	for e := messages.List().Front(); e != nil; e = e.Next() {
+	db.Find(&messages)
 
-		msg := e.Value.(model.Message)
+	for _, msg := range messages {
 		s := fmt.Sprintf("[%s] %s: %s \n", msg.Channel, msg.Username, msg.Content)
 		io.WriteString(w, s)
-		fmt.Println(e)
-
+		// fmt.Println(e)
 	}
+
+	// for e := messages.Front(); e != nil; e = e.Next() {
+
+	// 	msg := e.Value.(model.Message)
+	// 	s := fmt.Sprintf("[%s] %s: %s \n", msg.Channel, msg.Username, msg.Content)
+	// 	io.WriteString(w, s)
+	// 	fmt.Println(e)
+
+	// }
 
 }
