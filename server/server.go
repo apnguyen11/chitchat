@@ -1,5 +1,4 @@
 package main
-import "github.com/apnguyen11/chitchat/server/model"
 
 import (
 	"encoding/json"
@@ -8,8 +7,10 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"gorm.io/gorm"
+
+	"github.com/apnguyen11/chitchat/server/model"
 	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 var messages *MessageStore
@@ -22,17 +23,21 @@ func init() {
 func main() {
 	log.Printf("starting server")
 
-	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	var err error
+	db, err = gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 	if err != nil {
-	  panic("failed to connect database")
+		panic("failed to connect database")
 	}
-  
+
 	// Migrate the schema
 	db.AutoMigrate(&model.Message{})
-  
+	db.AutoMigrate(&model.User{})
+
 	// Set routing rules
 	http.HandleFunc("/messages/send", SendMessage)
 	http.HandleFunc("/messages/receive", GetMessage)
+	http.HandleFunc("/register", UserRegister)
+	http.HandleFunc("/login", UserLogin)
 
 	//Use the default DefaultServeMux.
 	err = http.ListenAndServe(":8080", logRequest(http.DefaultServeMux))
@@ -82,7 +87,7 @@ func GetMessage(w http.ResponseWriter, r *http.Request) {
 	db.Find(&messages)
 
 	for _, msg := range messages {
-		s := fmt.Sprintf("[%s] %s: %s \n", msg.Channel, msg.Username, msg.Content)
+		s := fmt.Sprintf("[%s] %s: %s \n", msg.Channel, msg.UserID, msg.Content)
 		io.WriteString(w, s)
 		// fmt.Println(e)
 	}
@@ -96,4 +101,56 @@ func GetMessage(w http.ResponseWriter, r *http.Request) {
 
 	// }
 
+}
+
+func UserRegister(w http.ResponseWriter, r *http.Request) {
+
+	enableCors(&w)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Println(err)
+	}
+
+	var registerRequest *model.UserRegisterRequest
+
+	err = json.Unmarshal(body, &registerRequest)
+	if err != nil {
+		log.Println(err)
+	}
+	fmt.Println(registerRequest)
+	u := model.User{}
+	u.Username = registerRequest.Username
+	u.Password = registerRequest.Password
+
+	db.Create(&u)
+	// messages.Add(m)
+}
+
+func UserLogin(w http.ResponseWriter, r *http.Request) {
+
+	enableCors(&w)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Println(err)
+	}
+
+	var loginRequest *model.UserLoginRequest
+
+	err = json.Unmarshal(body, &loginRequest)
+	if err != nil {
+		log.Println(err)
+	}
+
+	var user model.User
+
+	//FIXME need to check error on return
+	db.Where("username = ?", loginRequest.Username).First(&user)
+
+	if user.Password == loginRequest.Password {
+		log.Println("SUCCESS!!!")
+	} else {
+		log.Println("FAILL :(")
+	}
+
+	// messages.Add(m)
 }
