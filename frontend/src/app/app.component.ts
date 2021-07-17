@@ -18,10 +18,10 @@ export class AppComponent {
     // Simple GET request with response type <any>
 
 
-      this.http.get('http://localhost:8080/messages/receive', {responseType: 'text'}).subscribe(data => {
-        console.log(data, 'data')
-        this.message = data;
-      })
+      // this.http.get('http://localhost:8080/messages/receive', {responseType: 'text'}).subscribe(data => {
+      //   console.log(data, 'data')
+      //   this.message = data;
+      // })
 
   }
 

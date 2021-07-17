@@ -20,28 +20,18 @@ export class LoginComponent implements OnInit {
     })
   }
 
-  async registerUser(){
-    let httpHeaders = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin':'*',
-      'Cache-Control': 'no-cache'
+  registerUser(){
 
-    });
 
+    const headers = {
+      'content-type': 'application/json'
+    }
     let userInfo = this.userForm.value
     console.log(userInfo )
 
-
-    // this.http
-    // .post("http://localhost:8080/register", '{"username": "hey", "password": "boss"}', {
-    //   headers: httpHeaders,
-    // }).toPromise().then((data: any) => {
-    //   console.log(data, 'the****')
-    // })
-
     return this.http
-    .post("http://localhost:8080/register", userInfo, {
-      headers: httpHeaders,
+    .post("api/register", userInfo, {
+      headers: headers
     })
     .subscribe(
       data => {

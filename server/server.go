@@ -36,7 +36,7 @@ func main() {
 	// Set routing rules
 	http.HandleFunc("/messages/send", SendMessage)
 	http.HandleFunc("/messages/receive", GetMessage)
-	http.HandleFunc("/register", UserRegister)
+	http.HandleFunc("/api/register", UserRegister)
 	http.HandleFunc("/login", UserLogin)
 
 	//Use the default DefaultServeMux.
@@ -104,6 +104,8 @@ func GetMessage(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserRegister(w http.ResponseWriter, r *http.Request) {
+	println(r)
+	println("******************************************")
 
 	enableCors(&w)
 	body, err := ioutil.ReadAll(r.Body)
