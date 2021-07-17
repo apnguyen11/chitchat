@@ -1,0 +1,56 @@
+.message-box {
+
+  display: flex;
+  justify-content: center;
+}
+
+.title {
+  display: flex;
+  justify-content: center;
+  padding-top: 2%;
+  color: white;
+}
+
+.main {
+  height: 100vh;
+  background-color: #20639B;
+  width: 100%;
+}
+
+.input {
+  width: 30%;
+  background-color: #7db7e6;
+  border-radius: 5px;
+  margin-right: 1%;
+
+}
+
+.display {
+  background-color: white;
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  border-radius: 4px;
+  margin-bottom: 2%;
+  padding-top:2%;
+  box-shadow: 0 2px 6px 4px rgb(0 0 0 / 50%);
+}
+
+.display-outer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  height: 45%;
+  margin-bottom: 3%;
+}
+
+.container {
+  display: flex;
+}
+
+.channels {
+  width: 20%;
+  background-color: #5698d0;
+
+}
