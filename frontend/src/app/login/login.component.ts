@@ -20,9 +20,28 @@ export class LoginComponent implements OnInit {
     })
   }
 
+  loginUser(){
+    const headers = {
+      'content-type': 'application/json'
+    }
+    let userInfo = this.userForm.value
+    console.log(userInfo )
+
+    return this.http
+    .post("api/login", userInfo, {
+      headers: headers
+    })
+    .subscribe(
+      data => {
+        console.log("POST Request is successful ", data);
+      },
+      error => {
+        console.log("Error", error);
+      }
+    );
+  }
+
   registerUser(){
-
-
     const headers = {
       'content-type': 'application/json'
     }

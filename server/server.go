@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/apnguyen11/chitchat/server/model"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -37,7 +38,7 @@ func main() {
 	http.HandleFunc("/messages/send", SendMessage)
 	http.HandleFunc("/messages/receive", GetMessage)
 	http.HandleFunc("/api/register", UserRegister)
-	http.HandleFunc("/login", UserLogin)
+	http.HandleFunc("/api/login", UserLogin)
 
 	//Use the default DefaultServeMux.
 	err = http.ListenAndServe(":8080", logRequest(http.DefaultServeMux))
@@ -103,9 +104,17 @@ func GetMessage(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
+
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}
+
 func UserRegister(w http.ResponseWriter, r *http.Request) {
-	println(r)
-	println("******************************************")
 
 	enableCors(&w)
 	body, err := ioutil.ReadAll(r.Body)
@@ -121,8 +130,10 @@ func UserRegister(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(registerRequest)
 	u := model.User{}
+
+	hash, _ := HashPassword(registerRequest.Password)
 	u.Username = registerRequest.Username
-	u.Password = registerRequest.Password
+	u.Password = hash
 
 	db.Create(&u)
 	// messages.Add(m)
@@ -148,11 +159,10 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	//FIXME need to check error on return
 	db.Where("username = ?", loginRequest.Username).First(&user)
 
-	if user.Password == loginRequest.Password {
+	if CheckPasswordHash(loginRequest.Password, user.Password) {
 		log.Println("SUCCESS!!!")
+
 	} else {
 		log.Println("FAILL :(")
 	}
-
-	// messages.Add(m)
 }
