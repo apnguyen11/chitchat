@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -8,10 +9,13 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-
+  loginError = false;
   userForm: FormGroup;
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private router: Router
+    ) { }
 
   ngOnInit(): void {
     this.userForm = new FormGroup ({
@@ -32,8 +36,13 @@ export class LoginComponent implements OnInit {
       headers: headers
     })
     .subscribe(
-      data => {
-        console.log("POST Request is successful ", data);
+      (data: any) => {
+        if(data.success){
+          this.router.navigate(['/chat']);
+        } else {
+          this.loginError = true;
+        }
+        console.log("POST Request is successful ", data.success);
       },
       error => {
         console.log("Error", error);

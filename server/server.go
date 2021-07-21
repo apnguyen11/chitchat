@@ -155,14 +155,29 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var user model.User
+	l := model.LoginResponse{}
 
 	//FIXME need to check error on return
 	db.Where("username = ?", loginRequest.Username).First(&user)
 
+	w.Header().Set("Content-type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	if CheckPasswordHash(loginRequest.Password, user.Password) {
+		l.Success = true
+		status, err := json.Marshal(l)
+		if err != nil {
+			log.Println(err)
+		}
+		w.Write(status)
 		log.Println("SUCCESS!!!")
 
 	} else {
+		l.Success = false
+		status, err := json.Marshal(l)
+		if err != nil {
+			log.Println(err)
+		}
+		w.Write(status)
 		log.Println("FAILL :(")
 	}
 }

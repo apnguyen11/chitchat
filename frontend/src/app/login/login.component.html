@@ -8,5 +8,6 @@
       <button (click)="loginUser()">login</button>
     </div>
   </form>
+  <div [class.hidden]="!loginError" class="error">User does not exist or password/username is incorrect</div>
 
 </div>
