@@ -51,7 +51,7 @@ export class LoginComponent implements OnInit {
     .subscribe(
       (data: any) => {
         if(data.success){
-          // this.router.navigate(['/chat']);
+          this.router.navigate(['/chat']);
         } else {
           this.loginError = true;
         }

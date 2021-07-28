@@ -37,16 +37,35 @@ func main() {
 	db.AutoMigrate(&model.User{})
 
 	// Set routing rules
-	http.HandleFunc("/messages/send", SendMessage)
-	http.HandleFunc("/messages/receive", GetMessage)
+	http.HandleFunc("/api/messages/send", SendMessage)
+	http.HandleFunc("/api/messages/receive", GetMessage)
 	http.HandleFunc("/api/register", UserRegister)
 	http.HandleFunc("/api/login", UserLogin)
+	http.HandleFunc("/api/whoami", WhoAmI)
 
 	//Use the default DefaultServeMux.
 	err = http.ListenAndServe(":8080", logRequest(http.DefaultServeMux))
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func WhoAmI(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+	session, err := store.Get(r, "session-name")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	l := model.WhoAmIResponse{}
+	l.Username = fmt.Sprintf("%v", session.Values["username"])
+
+	sessionValues, _ := json.Marshal(l)
+
+	log.Println(sessionValues)
+	w.Header().Set("Content-type", "application/json")
+	w.Write(sessionValues)
+
 }
 
 func logRequest(handler http.Handler) http.Handler {
@@ -167,13 +186,13 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	session.Options = &sessions.Options{
-		// Path:   "localhost:4200",
-		Domain: "/",
-		MaxAge: 86400 * 7,
-		// MaxAge:   5,
-		HttpOnly: true,
-	}
+	// session.Options = &sessions.Options{
+	// 	// Path:   "localhost:4200",
+	// 	// Domain: "/",
+	// 	MaxAge: 86400 * 7,
+	// 	// MaxAge:   5,
+	// 	HttpOnly: true,
+	// }
 	r.ParseForm()
 	name := r.FormValue("username")
 	if name != "" {
@@ -182,7 +201,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-type", "application/json")
-	w.WriteHeader(http.StatusOK)
+	// w.WriteHeader(http.StatusOK)
 	if CheckPasswordHash(loginRequest.Password, user.Password) {
 		session.Values["username"] = loginRequest.Username
 		session.Values["authenticated"] = true

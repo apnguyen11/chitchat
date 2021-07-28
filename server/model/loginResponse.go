@@ -6,3 +6,7 @@ package model
 type LoginResponse struct {
 	Success bool `json:"success"`
 }
+
+type WhoAmIResponse struct {
+	Username string `json:"username"`
+}
