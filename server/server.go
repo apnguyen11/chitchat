@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/apnguyen11/chitchat/server/model"
+	"github.com/gorilla/sessions"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -16,6 +17,7 @@ import (
 
 var messages *MessageStore
 var db *gorm.DB
+var store = sessions.NewCookieStore([]byte("super-secret-password"))
 
 func init() {
 	messages = NewMessageStore()
@@ -35,10 +37,11 @@ func main() {
 	db.AutoMigrate(&model.User{})
 
 	// Set routing rules
-	http.HandleFunc("/messages/send", SendMessage)
-	http.HandleFunc("/messages/receive", GetMessage)
+	http.HandleFunc("/api/messages/send", SendMessage)
+	http.HandleFunc("/api/messages/receive", GetMessage)
 	http.HandleFunc("/api/register", UserRegister)
 	http.HandleFunc("/api/login", UserLogin)
+	http.HandleFunc("/api/whoami", WhoAmI)
 
 	//Use the default DefaultServeMux.
 	err = http.ListenAndServe(":8080", logRequest(http.DefaultServeMux))
@@ -47,10 +50,29 @@ func main() {
 	}
 }
 
+func WhoAmI(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+	session, err := store.Get(r, "session-name")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	l := model.WhoAmIResponse{}
+	l.Username = fmt.Sprintf("%v", session.Values["username"])
+
+	sessionValues, _ := json.Marshal(l)
+
+	log.Println(sessionValues)
+	w.Header().Set("Content-type", "application/json")
+	w.Write(sessionValues)
+
+}
+
 func logRequest(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
 		handler.ServeHTTP(w, r)
+
 	})
 }
 
@@ -157,12 +179,41 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	var user model.User
 	l := model.LoginResponse{}
 
-	//FIXME need to check error on return
 	db.Where("username = ?", loginRequest.Username).First(&user)
 
+	session, err := store.Get(r, "session-name")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	// session.Options = &sessions.Options{
+	// 	// Path:   "localhost:4200",
+	// 	// Domain: "/",
+	// 	MaxAge: 86400 * 7,
+	// 	// MaxAge:   5,
+	// 	HttpOnly: true,
+	// }
+	r.ParseForm()
+	name := r.FormValue("username")
+	if name != "" {
+		// Set name session value.
+		session.Values["name"] = name
+	}
+
 	w.Header().Set("Content-type", "application/json")
-	w.WriteHeader(http.StatusOK)
+	// w.WriteHeader(http.StatusOK)
 	if CheckPasswordHash(loginRequest.Password, user.Password) {
+		session.Values["username"] = loginRequest.Username
+		session.Values["authenticated"] = true
+		err = session.Save(r, w)
+		if err != nil {
+
+			log.Println("FAILL :( TO SAVE SESSION")
+		} else {
+			log.Println("SEESSSION SAVVE!")
+		}
+
+		log.Println(session, "SEEEESSSIIIOOONNN****", r.FormValue("Username"))
 		l.Success = true
 		status, err := json.Marshal(l)
 		if err != nil {

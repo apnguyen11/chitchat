@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { map, takeUntil, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
@@ -22,6 +23,15 @@ export class LoginComponent implements OnInit {
       username: new FormControl(),
       password: new FormControl()
     })
+
+    this.getSession()
+  }
+
+  getSession(){
+    var session = this.http.get("/").pipe(map((res: any)=>res.json()));
+    console.log(session.subscribe((posts)=>{
+      console.log("get session",posts);
+    }));
   }
 
   loginUser(){
@@ -31,9 +41,12 @@ export class LoginComponent implements OnInit {
     let userInfo = this.userForm.value
     console.log(userInfo )
 
+    this.getSession()
+
     return this.http
     .post("api/login", userInfo, {
-      headers: headers
+      headers: headers,
+      withCredentials: true
     })
     .subscribe(
       (data: any) => {
@@ -48,6 +61,7 @@ export class LoginComponent implements OnInit {
         console.log("Error", error);
       }
     );
+
   }
 
   registerUser(){
